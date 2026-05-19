@@ -1,0 +1,425 @@
+@import "tailwindcss" prefix(fmf);
+@import "tw-animate-css" prefix(fmf);
+
+@theme {
+    --color-brand-50: oklch(0.97 0.02 250);
+    --color-brand-500: oklch(0.65 0.18 250);
+    --color-brand-600: oklch(0.58 0.2 250);
+    --color-brand-700: oklch(0.5 0.2 250);
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+}
+
+/* Tailwind v4 CSS-first dark mode opt-in for the WP admin "midnight" scheme. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+#flexa-mf-admin-root,
+.flexa-mf-themed {
+    color-scheme: light dark;
+}
+
+/* Dark surface defaults: high-traffic backgrounds/borders only - individual
+ * components opt in via dark: variants where they want to override. */
+[data-theme="dark"] .flexa-mf-tree-app,
+[data-theme="dark"] .flexa-mf-modal-sidebar,
+[data-theme="dark"] .flexa-mf-upload-sidebar {
+    background-color: #1d2327 !important;
+    color: #e6e7e8;
+    border-color: #2c3338;
+}
+/* Tailwind utilities are emitted with an `fmf:` prefix (see @import above)
+ * to avoid colliding with WP admin's bare class names like `.fixed`. The
+ * colon is escaped in selectors below. */
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:text-slate-500,
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:text-slate-600,
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:text-slate-700,
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:text-slate-900 {
+    color: #e6e7e8;
+}
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:hover\:bg-slate-100:hover {
+    background-color: rgb(255 255 255 / 0.06);
+}
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:bg-slate-100 {
+    background-color: rgb(255 255 255 / 0.08);
+}
+[data-theme="dark"] .flexa-mf-tree-app .fmf\:bg-white,
+[data-theme="dark"] .flexa-mf-modal-sidebar .fmf\:bg-white,
+[data-theme="dark"] .flexa-mf-upload-sidebar .fmf\:bg-white {
+    background-color: #2c3338;
+    color: inherit;
+}
+
+.flexa-mf-wrap {
+    margin-right: 20px;
+}
+
+/* The settings page paints its own brand strip and gray canvas, so undo the
+ * default WP admin padding on #wpbody-content so the strip can span the full
+ * width of the admin area. Scoped to the settings page only - the upload.php
+ * sidebar still uses the standard WP layout. */
+#wpbody-content:has(.flexa-mf-settings-wrap) {
+    padding-bottom: 0;
+}
+/* #wpcontent has padding-left: 20px (LTR) / padding-right: 20px (RTL) - use
+ * logical properties to cancel that padding and bleed to the viewport edge.
+ * The block side (top/bottom) bleeds into #wpbody-content's own gutters.
+ * IMPORTANT: keep margin-inline-end at 0; setting it negative would push the
+ * wrap past the viewport's right edge and trigger a horizontal scrollbar. */
+.flexa-mf-settings-wrap {
+    margin-block: -10px;
+    margin-inline-start: -20px;
+    margin-inline-end: 0;
+}
+
+/* WP admin's `h2, h3 { margin: 1em 0 }` (specificity 0,0,1) pushes every
+ * heading we render down by ~16px, breaking SheetHeader / settings cards /
+ * the Toolbar label. Reset margins on plugin-rendered headings by matching
+ * the `fmf:` Tailwind-prefix marker on the class attribute - works inside
+ * the React tree AND inside Radix portals (Sheet, Popover, Dialog) which
+ * live outside `.flexa-mf-themed`. Specificity (0,1,1) beats WP's (0,0,1)
+ * without touching third-party headings. */
+:is(h2, h3)[class*="fmf:"] {
+    margin: 0;
+}
+
+/* The UA stylesheet (and wp-admin echoing it) also gives `<p>` a 1em block
+ * margin, which compounds with the heading reset above - SheetDescription,
+ * settings-card subtitles, and FormField help-text below labels end up
+ * with a stray gap above them. Reset only the description paragraph that
+ * directly follows a plugin heading/label, OR follows a wrapper whose
+ * direct child is one (Sheet header puts the title in a flex row alongside
+ * a Saving pill, so the description `<p>` is a sibling of the row, not of
+ * the `<h2>` itself). Leaves body-copy paragraphs elsewhere untouched. */
+:is(h2, h3, label)[class*="fmf:"] + p[class*="fmf:"],
+:has(> :is(h2, h3, label)[class*="fmf:"]) + p[class*="fmf:"] {
+    margin: 0;
+}
+
+/* WP admin ships `input[type=search] { padding: 0 8px }` (specificity 0,1,1),
+ * which beats Tailwind class selectors (0,1,0) and squashes the icon-padding
+ * on our SearchBox. Re-apply the relevant padding utilities under a themed
+ * root with a higher-specificity selector + !important so the Search icon
+ * and clear-button don't overlap the input text. Keep this list in sync if
+ * we add new padding utilities to type=search inputs. */
+.flexa-mf-themed input[type="search"].fmf\:pl-8 {
+    padding-left: 2rem !important;
+}
+.flexa-mf-themed input[type="search"].fmf\:pr-8 {
+    padding-right: 2rem !important;
+}
+
+/* upload.php (list + grid view): split #wpbody into a sidebar rail + content.
+ * The sidebar is a direct child of #wpbody, sibling of #wpbody-content. WP
+ * gives #wpbody-content `float: left; width: 100%` - float is neutralized by
+ * flex, and `flex: 1 1 0` overrides width so it fills only the remaining
+ * space instead of pushing the sidebar out.
+ *
+ * WP also drops a `<div class="clear">` after #wpbody-content; target the
+ * content element specifically so the clear div stays at zero width instead
+ * of being given an equal slice of the row. */
+.flexa-mf-has-upload-sidebar {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+}
+.flexa-mf-upload-sidebar {
+    /* Width is user-resizable: React writes --flexa-mf-sidebar-width onto
+     * this element (via MediaLibrarySidebar's useLayoutEffect). The fallback
+     * 260px applies on first paint before the persisted value lands. The
+     * min/max here are safety bounds - the React drag handler also clamps. */
+    width: var(--flexa-mf-sidebar-width, 260px);
+    min-width: 260px;
+    max-width: 670px;
+    flex: 0 0 auto;
+    padding: 12px 0 12px 12px;
+    /* Stick to the viewport and give the sidebar a definite height so the
+     * folder tree inside it (and the ScrollArea inside that) can resolve
+     * `h-full` reliably. Without an explicit height the chain
+     * `#wpbody → sidebar → tree-app` is all auto-sized, and the inner
+     * ScrollArea can't size its Viewport - content overflows the card.
+     *
+     * `display: flex; flex-direction: column` + `overflow: hidden` make the
+     * sidebar an explicit flex container with hard bounds, so the inner
+     * host/tree-app can use `flex: 1; min-height: 0` rather than a fragile
+     * `height: 100%` chain (which silently breaks if any ancestor's height
+     * isn't fully resolved at layout time - what happened in the wild on
+     * the WP admin shell). The bottom "New Folder" button then stays inside
+     * the viewport instead of being pushed below the WP footer. */
+    position: sticky;
+    top: 32px;
+    /* Height is also user-resizable: React writes --flexa-mf-sidebar-height
+     * when the user drags the bottom handle. Fallback fills the viewport. */
+    height: var(--flexa-mf-sidebar-height, calc(100vh - 32px));
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Belt: at scroll boundaries (when the inner Viewport hits top/bottom),
+     * don't chain to the WP admin body. Braces are the JS wheel-route below. */
+    overscroll-behavior: contain;
+    transition: width 180ms ease-out, min-width 180ms ease-out,
+        max-width 180ms ease-out, padding 180ms ease-out;
+}
+/* `AppProviders` wraps every React root in <div class="flexa-mf-themed">
+ * for dark-mode scoping. That wrapper used to be invisible to our height
+ * chain because we wrote `.flexa-mf-upload-sidebar > .flexa-mf-sidebar-host`
+ * (direct-child) - but the themed div sits between them, so the rule never
+ * matched. `.flexa-mf-sidebar-host`'s only height came from `h-full` against
+ * a content-sized `.flexa-mf-themed`, which collapsed. The inner Radix
+ * Viewport then had no definite height, no overflow, no scroll - which is
+ * exactly the bug reported in the recording.
+ *
+ * Fix: make the themed div participate in the flex chain (flex: 1, column),
+ * and use descendant selectors so any future intermediate wrapper doesn't
+ * silently break this again. */
+.flexa-mf-upload-sidebar > .flexa-mf-themed {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.flexa-mf-upload-sidebar .flexa-mf-sidebar-host {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.flexa-mf-upload-sidebar .flexa-mf-tree-app {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+/* Collapsed rail: keep just enough room for the expand button. `:has()` lets
+ * the parent react to a React-rendered child's data attribute without a
+ * round-trip through DOM mutation in the bridge. */
+.flexa-mf-upload-sidebar:has([data-flexa-mf-collapsed="1"]) {
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
+    padding: 12px 6px;
+}
+/* WP shrinks the admin bar to 46px on narrow screens. */
+@media screen and (max-width: 782px) {
+    .flexa-mf-upload-sidebar {
+        top: 46px;
+        height: calc(100vh - 46px);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .flexa-mf-upload-sidebar {
+        transition: none;
+    }
+}
+/* Resize handle: an 8px-wide hit zone straddling the sidebar's right edge.
+ * Transparent by default; lights up on hover and while actively dragging.
+ * The body[data-flexa-mf-resizing="1"] state disables the sidebar's width
+ * transition so the edge tracks the cursor 1:1 instead of easing. */
+.flexa-mf-resize-handle {
+    position: absolute;
+    /* Start below the absolute-positioned toggle button (top: 16px + 32px = 48px,
+     * plus a 4px gap) so the resize hit zone doesn't sit on top of the button. */
+    top: 52px;
+    right: -4px;
+    width: 8px;
+    height: calc(100% - 52px);
+    cursor: ew-resize;
+    z-index: 10;
+    touch-action: none;
+    background-color: transparent;
+    transition: background-color 120ms ease-out;
+}
+.flexa-mf-resize-handle:hover,
+body[data-flexa-mf-resizing="1"] .flexa-mf-resize-handle {
+    background-color: oklch(0.65 0.18 250 / 0.35);
+}
+body[data-flexa-mf-resizing="1"] {
+    cursor: ew-resize !important;
+    user-select: none;
+}
+body[data-flexa-mf-resizing="1"] .flexa-mf-upload-sidebar {
+    transition: none;
+}
+/* Hide the handle while collapsed - the rail is only 48px and dragging
+ * inside it conflicts with the expand button. */
+.flexa-mf-upload-sidebar:has([data-flexa-mf-collapsed="1"]) .flexa-mf-resize-handle {
+    display: none;
+}
+/* Vertical resize handle: an 8px-tall hit zone along the sidebar's bottom
+ * edge. Transparent by default; lights up on hover and while active. Sits
+ * inside `.flexa-mf-sidebar-host` (which is `position: relative`), so the
+ * handle's `bottom: 0` lands exactly on the host's bottom edge - i.e. the
+ * tree-app card's bottom edge. */
+.flexa-mf-vresize-handle {
+    position: absolute;
+    /* Stop short of the right edge so it doesn't collide with the horizontal
+     * resize handle at the corner. */
+    left: 0;
+    right: 8px;
+    bottom: -4px;
+    height: 8px;
+    cursor: ns-resize;
+    z-index: 10;
+    touch-action: none;
+    background-color: transparent;
+    transition: background-color 120ms ease-out;
+}
+.flexa-mf-vresize-handle:hover,
+body[data-flexa-mf-vresizing="1"] .flexa-mf-vresize-handle {
+    background-color: oklch(0.65 0.18 250 / 0.35);
+}
+body[data-flexa-mf-vresizing="1"] {
+    cursor: ns-resize !important;
+    user-select: none;
+}
+body[data-flexa-mf-vresizing="1"] .flexa-mf-upload-sidebar {
+    transition: none;
+}
+/* Hide the bottom handle while collapsed. */
+.flexa-mf-upload-sidebar:has([data-flexa-mf-collapsed="1"]) .flexa-mf-vresize-handle {
+    display: none;
+}
+.flexa-mf-has-upload-sidebar > #wpbody-content {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.flexa-mf-has-upload-sidebar > .clear {
+    display: none;
+}
+
+/* Card chrome (border, background, shadow) lives only on the upload.php
+ * rail. The modal sidebar already sits inside WP's own modal frame, and
+ * the standalone preview root is hosted in a wp-admin .wrap - a duplicate
+ * card in either context looks busy. Padding stays on the JSX so the tree
+ * still has interior spacing everywhere. */
+.flexa-mf-upload-sidebar .flexa-mf-tree-app {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+[data-theme="dark"] .flexa-mf-upload-sidebar .flexa-mf-tree-app {
+    background-color: #2c3338 !important;
+    border-color: #2c3338;
+}
+
+/* media modal AttachmentsBrowser: insert a sidebar before the toolbar/grid. */
+.flexa-mf-has-sidebar {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 12px;
+    height: 100%;
+}
+/* Mirror the upload-sidebar height chain: definite height + flex column +
+ * overflow: hidden, so the inner Radix ScrollArea is the single scroll
+ * container. The old `overflow: auto` here stacked two scroll containers
+ * (this one + the inner ScrollArea Viewport), and the outer one let the
+ * inner Viewport's `h-full` resolve to a value larger than visible - so the
+ * Viewport never saw the overflow it needed to enable scrolling and the
+ * mouse wheel did nothing. */
+.flexa-mf-modal-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    min-height: 0;
+    padding-right: 4px;
+}
+/* Same themed-wrapper bridge as the upload sidebar - see the comment block
+ * above the upload-sidebar height-chain rules. */
+.flexa-mf-modal-sidebar > .flexa-mf-themed {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.flexa-mf-modal-sidebar .flexa-mf-sidebar-host {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.flexa-mf-modal-sidebar .flexa-mf-tree-app {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+/* AttachmentsBrowser direct children include .media-toolbar, ul.attachments,
+ * .uploader-inline, .media-sidebar, and sometimes status/no-results banners.
+ * Force everything except our injected sidebar into the right grid column so
+ * nothing slips back into column 1 and overlaps the tree. `min-width: 0` keeps
+ * wide content (long filenames, thumbnails) from blowing out the column. */
+.flexa-mf-has-sidebar > *:not(.flexa-mf-modal-sidebar) {
+    grid-column: 2;
+    min-width: 0;
+}
+
+/* Standalone preview root (`#flexa-mf-admin-root`): give the tree-app a
+ * definite height so the inner ScrollArea can resolve `flex-1 min-h-0`.
+ * Without this, integrators who drop the root into a page with no surrounding
+ * height get an unscrollable tree (the Viewport sees no overflow). */
+#flexa-mf-admin-root {
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+    max-height: calc(100vh - 100px);
+}
+#flexa-mf-admin-root > .flexa-mf-themed {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+#flexa-mf-admin-root .flexa-mf-tree-app {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Hide WP's "Drop files to upload" overlay while we're dragging an attachment
+ * onto a folder - plupload toggles .drag-drop on <body> as a side effect of
+ * the bridge's pre-empt; this CSS rule pins it hidden for good measure. */
+body[data-flexa-mf-dragging="1"] .uploader-window,
+body[data-flexa-mf-dragging="1"] .upload-ui,
+body[data-flexa-mf-dragging="1"].drag-drop .uploader-window,
+body[data-flexa-mf-dragging="1"].drag-drop #drag-drop-area {
+    display: none !important;
+}
+
+@keyframes flexa-mf-toast-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+.flexa-mf-toast > div {
+    animation: flexa-mf-toast-in 180ms ease-out;
+}
+@keyframes flexa-mf-drag-tooltip-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.flexa-mf-drag-tooltip {
+    animation: flexa-mf-drag-tooltip-in 120ms ease-out;
+}
+
+.flexa-mf-chevron {
+    transition: transform 180ms ease-out;
+}
+.flexa-mf-chevron[data-collapsed="false"] {
+    transform: rotate(0deg);
+}
+.flexa-mf-chevron[data-collapsed="true"] {
+    transform: rotate(-90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .flexa-mf-chevron,
+    .flexa-mf-toast > div,
+    .flexa-mf-drag-tooltip {
+        animation: none !important;
+        transition: none !important;
+    }
+}

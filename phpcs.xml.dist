@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="Flexa Media Folders">
+    <description>Coding standards for Flexa Media Folders.</description>
+
+    <file>./src</file>
+    <file>./flexa-media-folders.php</file>
+    <file>./uninstall.php</file>
+    <file>./views</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/assets/dist/*</exclude-pattern>
+    <exclude-pattern>*/filebird-pro/*</exclude-pattern>
+    <exclude-pattern>*/apps/*</exclude-pattern>
+
+    <arg value="sp"/>
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+
+    <config name="testVersion" value="8.2-"/>
+    <config name="minimum_supported_wp_version" value="5.8"/>
+
+    <rule ref="WordPress">
+        <exclude name="WordPress.Files.FileName"/>
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+    </rule>
+    <rule ref="PHPCompatibilityWP"/>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array" value="flexa-media-folders"/>
+        </properties>
+    </rule>
+</ruleset>

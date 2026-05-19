@@ -1,0 +1,16 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+        - flexa-media-folders.php
+        - uninstall.php
+    excludePaths:
+        - vendor
+        - node_modules
+        - assets/dist
+        - filebird-pro
+    bootstrapFiles:
+        - vendor/szepeviktor/phpstan-wordpress/bootstrap.php
