@@ -2,7 +2,7 @@
 Contributors: flexatech
 Tags: media library, folders, media, organize, attachments
 Requires at least: 6.2
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.2
 Stable tag: 1.0.1
 License: GPL v2 or later
