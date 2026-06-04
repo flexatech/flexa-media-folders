@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Flexa Media Folders
  * Description:       Organize the WordPress Media Library into a hierarchical, drag-and-drop folder tree.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.2
  * Requires PHP:      8.2
  * Author:            Flexa Tech
@@ -29,7 +29,7 @@ if ( version_compare( PHP_VERSION, '8.2', '<' ) ) {
 	return;
 }
 
-define( 'FLEXA_MF_VERSION', '1.0.1' );
+define( 'FLEXA_MF_VERSION', '1.0.2' );
 define( 'FLEXA_MF_FILE', __FILE__ );
 define( 'FLEXA_MF_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FLEXA_MF_URL', plugin_dir_url( __FILE__ ) );

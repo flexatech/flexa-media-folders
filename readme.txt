@@ -4,7 +4,7 @@ Tags: media library, folders, media, organize, attachments
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,7 +70,7 @@ Yes - all folder data is exposed under `/wp-json/flexa-mf/v1/`. The endpoints re
 
 = How does the plugin handle authentication and permissions? =
 
-Every state-changing request goes through the WordPress REST API and is gated by two checks: a capability check (`upload_files` for folder actions, `manage_options` for settings and the data-reset endpoint) and the standard WordPress REST nonce (`X-WP-Nonce`). The plugin does not register any custom admin-ajax endpoints. Both capability gates are filterable via `flexa_mf/capabilities/manage` and `flexa_mf/capabilities/settings` if you need to tighten or loosen them.
+Every state-changing request goes through the WordPress REST API and is gated by two checks: a capability check (`upload_files` for folder actions, `manage_options` for settings and the data-reset endpoint) and the standard WordPress REST nonce (`X-WP-Nonce`). On top of that, assigning or detaching media is verified per attachment with the `edit_post` capability, and the attachment listing is scoped to media the current user can manage. The plugin does not register any custom admin-ajax endpoints. Both capability gates are filterable via `flexa_mf/capabilities/manage` and `flexa_mf/capabilities/settings` if you need to tighten or loosen them.
 
 = Can I stop the sidebar from showing on a particular post type? =
 
@@ -85,6 +85,10 @@ Yes. The plugin's Settings page has a per-post-type exclusion list.
 5. The Flexa Media Folders settings page.
 
 == Changelog ==
+
+= 1.0.2 =
+* Security: the folder assign/detach REST endpoints now verify per-attachment edit permission (`edit_post`) for each item, so a user can only organize media they are allowed to edit instead of any attachment in the library.
+* Security: the attachment-listing REST endpoint now scopes results to media the caller can manage - users who cannot edit others' posts see only their own uploads.
 
 = 1.0.1 =
 * Security: bind every custom-table identifier through `wpdb::prepare()`'s `%i` placeholder so no SQL string interpolates a table name outside `prepare()`.
@@ -106,6 +110,9 @@ Yes. The plugin's Settings page has a per-post-type exclusion list.
 * Translation ready with a bundled `.pot` template.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Security hardening: REST endpoints now enforce per-attachment edit permissions and scope media listings to what each user can manage.
 
 = 1.0.1 =
 Security hardening for SQL identifier binding and admin capability checks; dark-mode and settings-page UI fixes. Now requires WordPress 6.2 or later.

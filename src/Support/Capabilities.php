@@ -7,8 +7,8 @@ namespace Flexa\MediaFolders\Support;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Capability helpers. Pro overrides `flexa_mf/capabilities/manage` and friends
- * to inject per-user scoping or role-based folder access.
+ * Capability helpers. The `flexa_mf/capabilities/*` filters allow add-ons to
+ * inject per-user scoping or role-based folder access.
  */
 final class Capabilities {
 	public const MANAGE   = 'upload_files';
