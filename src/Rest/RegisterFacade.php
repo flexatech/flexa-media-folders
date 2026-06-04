@@ -9,8 +9,8 @@ use Flexa\MediaFolders\Support\SingletonTrait;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers every REST controller in one place. Pro adds its own controllers
- * by hooking the `flexa_mf/rest/register_routes` action.
+ * Registers every REST controller in one place. Add-ons can register their own
+ * controllers by hooking the `flexa_mf/rest/register_routes` action.
  */
 final class RegisterFacade {
 	use SingletonTrait;

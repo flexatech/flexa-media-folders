@@ -386,16 +386,53 @@ final class FolderController extends BaseRestController {
 		if ( $id > 0 && ! $this->folders->exists( $id ) ) {
 			return new WP_Error( 'flexa_mf_not_found', __( 'Folder not found.', 'flexa-media-folders' ), [ 'status' => 404 ] );
 		}
-		$attachment_ids = array_map( 'intval', (array) $request->get_param( 'attachment_ids' ) );
-		$count          = $this->attachments->set_folder( $attachment_ids, $id );
+		$attachment_ids = $this->editable_attachment_ids( $request->get_param( 'attachment_ids' ) );
+		if ( $attachment_ids === [] ) {
+			return $this->no_editable_attachments_error();
+		}
+		$count = $this->attachments->set_folder( $attachment_ids, $id );
 		return new WP_REST_Response( [ 'moved' => $count ], 200 );
 	}
 
 	public function detach_attachments( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$id             = (int) $request->get_param( 'id' );
-		$attachment_ids = array_map( 'intval', (array) $request->get_param( 'attachment_ids' ) );
-		$count          = $this->attachments->detach( $attachment_ids, $id );
+		$attachment_ids = $this->editable_attachment_ids( $request->get_param( 'attachment_ids' ) );
+		if ( $attachment_ids === [] ) {
+			return $this->no_editable_attachments_error();
+		}
+		$count = $this->attachments->detach( $attachment_ids, $id );
 		return new WP_REST_Response( [ 'detached' => $count ], 200 );
+	}
+
+	/**
+	 * Reduce the requested attachment ids to those the current user is actually
+	 * allowed to edit. `manage_permission` only gates on `upload_files`, which
+	 * every author has - so without this per-item check a user could reorganize
+	 * media owned by other users. Each attachment is a post, so the `edit_post`
+	 * meta-cap maps to the correct ownership/role check, and non-attachment ids
+	 * are rejected outright.
+	 *
+	 * @param mixed $raw
+	 * @return int[]
+	 */
+	private function editable_attachment_ids( mixed $raw ): array {
+		$allowed = [];
+		foreach ( array_unique( array_map( 'intval', (array) $raw ) ) as $attachment_id ) {
+			if ( $attachment_id > 0
+				&& get_post_type( $attachment_id ) === 'attachment'
+				&& current_user_can( 'edit_post', $attachment_id ) ) {
+				$allowed[] = $attachment_id;
+			}
+		}
+		return $allowed;
+	}
+
+	private function no_editable_attachments_error(): WP_Error {
+		return new WP_Error(
+			'flexa_mf_forbidden',
+			__( 'You do not have permission to modify the selected media.', 'flexa-media-folders' ),
+			[ 'status' => rest_authorization_required_code() ]
+		);
 	}
 
 	public function sanitize_name( mixed $value ): string {

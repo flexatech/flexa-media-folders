@@ -15,10 +15,9 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Lists attachments scoped to a folder. Phase 3 will swap the in-memory
- * filter for a posts_join + posts_where so the standard media query can
- * also filter - but the REST endpoint is useful on its own for the
- * Pro Gallery block and external integrations.
+ * Lists attachments scoped to a folder, using a posts_clauses join so the
+ * standard media query can filter by folder. Also usable on its own for
+ * external integrations.
  */
 final class AttachmentController extends BaseRestController {
 	public const SPECIAL_ALL           = -1;
@@ -83,6 +82,13 @@ final class AttachmentController extends BaseRestController {
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 		];
+
+		// `manage_permission` only checks `upload_files`, which authors have.
+		// Limit the listing to media the caller is allowed to manage: users who
+		// cannot edit others' posts see only their own uploads.
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			$args['author'] = get_current_user_id();
+		}
 		if ( $search !== '' ) {
 			$args['s'] = $search;
 		}
