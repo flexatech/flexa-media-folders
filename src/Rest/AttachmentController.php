@@ -83,6 +83,18 @@ final class AttachmentController extends BaseRestController {
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 		];
+
+		// `manage_permission` only checks `upload_files`, which authors have.
+		// Limit the listing to media the caller is allowed to manage: users who
+		// cannot edit others' posts see only their own uploads. Pro relaxes this
+		// for shared-library modes via the filter.
+		$restrict_to_author = apply_filters(
+			'flexa_mf/attachments/restrict_to_author',
+			! current_user_can( 'edit_others_posts' )
+		);
+		if ( $restrict_to_author ) {
+			$args['author'] = get_current_user_id();
+		}
 		if ( $search !== '' ) {
 			$args['s'] = $search;
 		}
