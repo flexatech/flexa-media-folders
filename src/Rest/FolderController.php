@@ -390,8 +390,18 @@ final class FolderController extends BaseRestController {
 		if ( $attachment_ids === [] ) {
 			return $this->no_editable_attachments_error();
 		}
-		$count = $this->attachments->set_folder( $attachment_ids, $id );
-		return new WP_REST_Response( [ 'moved' => $count ], 200 );
+		// Snapshot the current membership before overwriting it so the client
+		// can offer an Undo that restores each attachment to its old folder
+		// (key 0 = Uncategorized). JSON-encodes as an object keyed by folder id.
+		$previous = $this->attachments->folders_map( $attachment_ids );
+		$count    = $this->attachments->set_folder( $attachment_ids, $id );
+		return new WP_REST_Response(
+			[
+				'moved'    => $count,
+				'previous' => (object) $previous,
+			],
+			200
+		);
 	}
 
 	public function detach_attachments( WP_REST_Request $request ): WP_REST_Response|WP_Error {

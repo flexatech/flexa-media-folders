@@ -1,0 +1,550 @@
+# Copyright (C) 2026 Flexa Tech
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexa Media Folders 1.2.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/flexa-media-folders\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-12T08:56:26+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: flexa-media-folders\n"
+
+#: apps/admin/src/components/DragTooltip.tsx:80
+msgid "Move %s item"
+msgid_plural "Move %s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/components/ui/folder-tree-select.tsx:128
+msgid "Select a folder…"
+msgstr ""
+
+#: apps/admin/src/components/ui/folder-tree-select.tsx:158
+#: apps/admin/src/features/folder-tree/SearchBox.tsx:17
+msgid "Search folders…"
+msgstr ""
+
+#: apps/admin/src/components/ui/folder-tree-select.tsx:165
+msgid "No folders match."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:67
+msgid "Created %s folder"
+msgid_plural "Created %s folders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:81
+msgid "Failed to create folders"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:100
+#: apps/admin/src/features/folder-tree/FolderTreeApp.tsx:315
+#: apps/admin/src/features/folder-tree/FolderTreeApp.tsx:325
+msgid "Create folders in bulk"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:103
+msgid "One folder per line. Use “/” to nest - e.g. 2026/January creates 2026 then January inside it."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:116
+msgid "Folder list"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:132
+msgid "Preview"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:136
+msgid "No folders yet"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:138
+msgid "%s folder"
+msgid_plural "%s folders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:150
+msgid "Start typing - the preview will show the tree you'll create."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:175
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:107
+#: apps/admin/src/features/settings/DangerZone.tsx:98
+msgid "Cancel"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:189
+msgid "Creating…"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:191
+msgid "Create"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/BulkCreateSheet.tsx:193
+msgid "Create %s folder"
+msgid_plural "Create %s folders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/features/folder-tree/FolderColorPalette.tsx:55
+msgid "Reset color"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:169
+#: apps/admin/src/features/folder-tree/PendingFolderRow.tsx:76
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:78
+msgid "Folder name"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:391
+msgid "Expand"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:391
+msgid "Collapse"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:449
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:390
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:448
+#: apps/admin/src/features/folder-tree/FolderTreeApp.tsx:307
+#: apps/admin/src/features/folder-tree/PendingFolderRow.tsx:19
+msgid "New Folder"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:454
+msgid "Rename"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:458
+msgid "Cut"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:462
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:397
+msgid "Paste"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:466
+msgid "Delete"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:471
+msgid "Change Color"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderNode.tsx:482
+msgid "Download"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:432
+msgid "No folders match your search."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:433
+msgid "No folders yet. Create one to get started."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderTree.tsx:461
+msgid "Create in bulk"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/FolderTreeApp.tsx:146
+msgid "Download folder “%s” will be available in Pro."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:65
+msgid "Rename folder"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:68
+msgid "Pick a new name for this folder."
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:116
+#: apps/admin/src/features/settings/SettingsPage.tsx:181
+#: apps/admin/src/features/settings/SettingsSheet.tsx:102
+msgid "Saving…"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/RenameSheet.tsx:116
+msgid "Save"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/SearchBox.tsx:21
+msgid "Search folders"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/SearchBox.tsx:29
+msgid "Clear search"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/Specials.tsx:116
+msgid "All Files"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/Specials.tsx:145
+msgid "Uncategorized"
+msgstr ""
+
+#: apps/admin/src/features/folder-tree/Toolbar.tsx:7
+msgid "Directory"
+msgstr ""
+
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:138
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:139
+msgid "Show folders"
+msgstr ""
+
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:138
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:139
+msgid "Hide folders"
+msgstr ""
+
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:179
+msgid "Resize sidebar"
+msgstr ""
+
+#: apps/admin/src/features/media-library/MediaLibrarySidebar.tsx:191
+msgid "Resize sidebar height"
+msgstr ""
+
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:36
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:37
+msgid "Open menu"
+msgstr ""
+
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:49
+#: apps/admin/src/features/settings/SettingsPage.tsx:158
+#: src/Admin/AdminMenu.php:29
+msgid "Settings"
+msgstr ""
+
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:65
+msgid "Display folder ID"
+msgstr ""
+
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:82
+msgid "Expand all"
+msgstr ""
+
+#: apps/admin/src/features/media-library/SidebarMenu.tsx:92
+msgid "Collapse all"
+msgstr ""
+
+#: apps/admin/src/features/media-library/useAssignAttachments.ts:50
+msgid "Move undone."
+msgstr ""
+
+#: apps/admin/src/features/media-library/useAssignAttachments.ts:55
+msgid "Failed to undo. Please try again."
+msgstr ""
+
+#: apps/admin/src/features/media-library/useAssignAttachments.ts:77
+msgid "Moved %s item"
+msgid_plural "Moved %s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/features/media-library/useAssignAttachments.ts:82
+msgid "Undo"
+msgstr ""
+
+#: apps/admin/src/features/media-library/useAssignAttachments.ts:90
+msgid "Failed to move items. Please try again."
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:51
+msgid "Danger zone"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:54
+msgid "Permanently delete all folders and detach every attachment from every folder. Your media files themselves are never touched."
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:62
+msgid "Reset folder data…"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:68
+msgid "Reset folder data?"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:70
+msgid "This drops every folder and detaches every attachment. The attachments themselves stay in the Media Library. This cannot be undone."
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:78
+msgid "Type"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:80
+msgid "to confirm"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:108
+msgid "Resetting…"
+msgstr ""
+
+#: apps/admin/src/features/settings/DangerZone.tsx:108
+#: apps/admin/src/features/settings/SettingsPage.tsx:72
+msgid "Reset everything"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:33
+#: apps/admin/src/features/settings/SettingsSheet.tsx:32
+msgid "Manual (drag to reorder)"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:34
+#: apps/admin/src/features/settings/SettingsSheet.tsx:33
+msgid "Name (A → Z)"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:35
+#: apps/admin/src/features/settings/SettingsSheet.tsx:34
+msgid "Name (Z → A)"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:52
+msgid "General"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:53
+msgid "Core folder behavior"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:55
+msgid "General Settings"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:56
+msgid "Essential configuration options"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:60
+msgid "Integrations"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:61
+msgid "Post types & editors"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:63
+msgid "Post Types"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:64
+msgid "Exclude post types from the folder sidebar"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:68
+#: apps/admin/src/features/settings/SettingsPage.tsx:71
+msgid "Danger Zone"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:69
+msgid "Destructive actions"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:92
+#: apps/admin/src/features/settings/SettingsSheet.tsx:120
+msgid "Loading settings…"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:99
+#: apps/admin/src/features/settings/SettingsSheet.tsx:126
+msgid "Failed to load settings:"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:105
+#: apps/admin/src/features/settings/SettingsSheet.tsx:49
+msgid "No folder (show all)"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:106
+#: apps/admin/src/features/settings/SettingsSheet.tsx:50
+msgid "Last-selected folder"
+msgstr ""
+
+#. Plugin Name of the plugin
+#: apps/admin/src/features/settings/SettingsPage.tsx:145
+#: flexa-media-folders.php
+#: views/admin-app.php:13
+msgid "Flexa Media Folders"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:148
+msgid "for WordPress"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:161
+msgid "Configure how the folder tree behaves inside the Media Library."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:167
+msgid "Settings saved."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:172
+msgid "Save failed:"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:181
+msgid "Save Settings"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:365
+#: apps/admin/src/features/settings/SettingsSheet.tsx:134
+msgid "Default folder on load"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:366
+msgid "Which folder to open when the Media Library opens."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:380
+#: apps/admin/src/features/settings/SettingsSheet.tsx:148
+msgid "Folder sort order"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:381
+#: apps/admin/src/features/settings/SettingsSheet.tsx:149
+msgid "Default order folders appear in the tree."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:400
+#: apps/admin/src/features/settings/SettingsSheet.tsx:163
+msgid "Show attachment counts"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:401
+msgid "Show the number of attachments next to each folder."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:424
+msgid "Which post types should be excluded from Flexa Media Folders?"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:427
+msgid "Flexa Media Folders is enabled on every public post type by default. Check a post type to exclude it from the folder sidebar."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsPage.tsx:432
+msgid "No public post types found."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:69
+msgid "Failed to save settings"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:91
+msgid "Quick Settings"
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:107
+msgid "Changes apply instantly. Everything else lives on the full settings page."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:135
+msgid "Which folder opens when the Media Library appears."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:164
+msgid "Display the number of attachments next to each folder."
+msgstr ""
+
+#: apps/admin/src/features/settings/SettingsSheet.tsx:182
+msgid "Open full settings"
+msgstr ""
+
+#: apps/admin/src/lib/wp-media-bridge.ts:540
+msgid "Added %s upload to this folder"
+msgid_plural "Added %s uploads to this folder"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/admin/src/lib/wp-media-bridge.ts:559
+msgid "Some uploads could not be added to the folder."
+msgstr ""
+
+#. Description of the plugin
+#: flexa-media-folders.php
+msgid "Organize the WordPress Media Library into a hierarchical, drag-and-drop folder tree."
+msgstr ""
+
+#. Author of the plugin
+#: flexa-media-folders.php
+msgid "Flexa Tech"
+msgstr ""
+
+#. Author URI of the plugin
+#: flexa-media-folders.php
+msgid "https://flexa.vn"
+msgstr ""
+
+#: flexa-media-folders.php:25
+msgid "Flexa Media Folders requires PHP 8.2 or higher. The plugin has been disabled."
+msgstr ""
+
+#: src/Admin/AdminMenu.php:42
+#: src/Admin/AdminMenu.php:43
+msgid "Media Folders"
+msgstr ""
+
+#: src/Rest/BaseRestController.php:27
+msgid "You do not have permission to manage folders."
+msgstr ""
+
+#: src/Rest/BaseRestController.php:39
+msgid "You do not have permission to update settings."
+msgstr ""
+
+#: src/Rest/FolderController.php:235
+#: src/Rest/FolderController.php:281
+#: src/Rest/FolderController.php:328
+msgid "Parent folder does not exist."
+msgstr ""
+
+#: src/Rest/FolderController.php:251
+msgid "Folder could not be created."
+msgstr ""
+
+#: src/Rest/FolderController.php:261
+#: src/Rest/FolderController.php:301
+#: src/Rest/FolderController.php:387
+msgid "Folder not found."
+msgstr ""
+
+#: src/Rest/FolderController.php:277
+msgid "A folder cannot be its own parent."
+msgstr ""
+
+#: src/Rest/FolderController.php:286
+msgid "A folder cannot be moved into its own descendant."
+msgstr ""
+
+#: src/Rest/FolderController.php:443
+msgid "You do not have permission to modify the selected media."
+msgstr ""
+
+#: src/Rest/FolderController.php:457
+msgid "Folder name cannot be empty."
+msgstr ""
+
+#: src/Rest/FolderController.php:463
+msgid "Folder name is too long."
+msgstr ""
+
+#: src/Rest/SettingsController.php:85
+msgid "Type \"delete all folders\" to confirm."
+msgstr ""

@@ -9,7 +9,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { __ } from "@/lib/i18n";
+import { __, sprintf } from "@/lib/i18n";
 import { useUiStore } from "@/lib/store";
 import { isListMode } from "@/lib/wp-media-bridge";
 import { useAssignAttachments } from "../media-library/useAssignAttachments";
@@ -143,7 +143,7 @@ export function FolderTreeApp({
 
     const handleDownload = (_id: number, name: string) => {
         window.alert(
-            __("Download folder “%s” will be available in Pro.").replace("%s", name),
+            sprintf(__("Download folder “%s” will be available in Pro."), name),
         );
     };
 

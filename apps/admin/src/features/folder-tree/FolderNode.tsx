@@ -12,8 +12,11 @@ import {
 } from "lucide-react";
 import {
     forwardRef,
+    useEffect,
+    useRef,
     useState,
     type DragEvent as ReactDragEvent,
+    type KeyboardEvent,
     type MouseEvent,
 } from "react";
 import {
@@ -33,6 +36,7 @@ import { useSettings } from "../settings/useSettings";
 import { CountBadge } from "./CountBadge";
 import { FolderColorPalette } from "./FolderColorPalette";
 import type { FlattenedItem } from "./types";
+import { useUpdateFolder } from "./useFolderMutations";
 
 export const INDENT_PX = 20;
 // Height reserved for the sibling-insert preview ghost. Matches the visual
@@ -100,6 +104,74 @@ function readDragPayload(event: ReactDragEvent<HTMLElement>): DragPayload | null
     }
 }
 
+interface InlineRenameInputProps {
+    defaultValue: string;
+    onSubmit: (name: string) => void;
+    onCancel: () => void;
+}
+
+function InlineRenameInput({
+    defaultValue,
+    onSubmit,
+    onCancel,
+}: InlineRenameInputProps) {
+    const [value, setValue] = useState(defaultValue);
+    const inputRef = useRef<HTMLInputElement>(null);
+    // Enter triggers blur when the input unmounts - settle once, like
+    // PendingFolderRow, so submit/cancel can't double-fire.
+    const settledRef = useRef(false);
+
+    useEffect(() => {
+        const el = inputRef.current;
+        if (!el) {
+            return;
+        }
+        el.focus();
+        el.select();
+    }, []);
+
+    const settle = (action: "submit" | "cancel") => {
+        if (settledRef.current) {
+            return;
+        }
+        settledRef.current = true;
+        if (action === "submit") {
+            onSubmit(value);
+        } else {
+            onCancel();
+        }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            event.stopPropagation();
+            settle("submit");
+        } else if (event.key === "Escape") {
+            // stopPropagation keeps Escape from also closing the media modal.
+            event.preventDefault();
+            event.stopPropagation();
+            settle("cancel");
+        }
+    };
+
+    return (
+        <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={() => settle("submit")}
+            onClick={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            aria-label={__("Folder name")}
+            className="fmf:ml-1 fmf:min-w-0 fmf:flex-1 fmf:rounded fmf:border fmf:border-brand-400 fmf:bg-white fmf:px-2 fmf:py-0.5 fmf:text-sm fmf:shadow-sm fmf:outline-none fmf:ring-2 fmf:ring-brand-200 fmf:focus:ring-brand-300"
+        />
+    );
+}
+
 export const FolderNode = forwardRef<HTMLDivElement, FolderNodeProps>(
     function FolderNode(
         {
@@ -130,6 +202,18 @@ export const FolderNode = forwardRef<HTMLDivElement, FolderNodeProps>(
         const displayFolderId = useUiStore((s) => s.displayFolderId);
         const showCounts = useSettings().data?.show_counts ?? true;
         const [dropHover, setDropHover] = useState(false);
+        const [renaming, setRenaming] = useState(false);
+        const updateFolder = useUpdateFolder();
+
+        const submitRename = (raw: string) => {
+            setRenaming(false);
+            const trimmed = raw.trim();
+            // Empty names are blocked; unchanged names skip the mutation.
+            if (trimmed === "" || trimmed === item.name) {
+                return;
+            }
+            updateFolder.mutate({ id: item.id, name: trimmed });
+        };
 
         const handleChevron = (e: MouseEvent) => {
             e.stopPropagation();
@@ -217,7 +301,7 @@ export const FolderNode = forwardRef<HTMLDivElement, FolderNodeProps>(
                                     : undefined,
                         }}
                         {...draggable.attributes}
-                        {...draggable.listeners}
+                        {...(renaming ? undefined : draggable.listeners)}
                         role="treeitem"
                         aria-selected={selected}
                         aria-expanded={item.hasChildren ? !item.collapsed : undefined}
@@ -329,14 +413,28 @@ export const FolderNode = forwardRef<HTMLDivElement, FolderNodeProps>(
                                 />
                             </div>
                         )}
-                        <span className="fmf:min-w-0 fmf:flex-1 fmf:truncate">
-                            {displayFolderId && (
-                                <span className="fmf:tabular-nums">
-                                    #{item.id}{" "}
-                                </span>
-                            )}
-                            {item.name}
-                        </span>
+                        {renaming ? (
+                            <InlineRenameInput
+                                defaultValue={item.name}
+                                onSubmit={submitRename}
+                                onCancel={() => setRenaming(false)}
+                            />
+                        ) : (
+                            <span
+                                className="fmf:min-w-0 fmf:flex-1 fmf:truncate"
+                                onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    setRenaming(true);
+                                }}
+                            >
+                                {displayFolderId && (
+                                    <span className="fmf:tabular-nums">
+                                        #{item.id}{" "}
+                                    </span>
+                                )}
+                                {item.name}
+                            </span>
+                        )}
                         {showCounts && item.count > 0 && (
                             <CountBadge
                                 count={item.count}

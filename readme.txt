@@ -4,7 +4,7 @@ Tags: media library, folders, media, organize, attachments
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.0.2
+Stable tag: 1.2.4
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,24 @@ Yes. The plugin's Settings page has a per-post-type exclusion list.
 5. The Flexa Media Folders settings page.
 
 == Changelog ==
+
+= 1.2.4 =
+* New: translation template (.pot) covering all plugin strings, so the plugin can now be translated into other languages.
+
+= 1.2.3 =
+* New: a Settings link on the Plugins page now takes you straight to the Media Folders settings.
+
+= 1.2.2 =
+* Fix: development files are no longer included in the release package.
+
+= 1.2.1 =
+* Fix: the "Download folder" notice now inserts the folder name correctly in translated languages, so translators can reposition the placeholder.
+
+= 1.2.0 =
+* New: after moving media into a folder, the confirmation toast now offers an Undo button for 5 seconds - click it to send every item back to its previous folder (including Uncategorized) with folder counts and the media grid updated automatically.
+
+= 1.1.0 =
+* New: rename a folder inline by double-clicking its name in the sidebar - press Enter or click away to save, Esc to cancel. Empty names are ignored and the right-click Rename option still works as before.
 
 = 1.0.2 =
 * Security: the folder assign/detach REST endpoints now verify per-attachment edit permission (`edit_post`) for each item, so a user can only organize media they are allowed to edit instead of any attachment in the library.

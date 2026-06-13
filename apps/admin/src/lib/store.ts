@@ -2,10 +2,24 @@ import { create } from "zustand";
 import { persist, type PersistOptions } from "zustand/middleware";
 import type { SelectedFolderId } from "@/features/folder-tree/types";
 
+export interface ToastAction {
+    label: string;
+    onAction: () => void;
+}
+
 export interface ToastState {
     id: number;
     message: string;
     tone: "success" | "error";
+    /** Overrides the Toaster's default auto-dismiss delay. */
+    durationMs?: number;
+    /** Optional action button (e.g. Undo); clicking it dismisses the toast. */
+    action?: ToastAction;
+}
+
+export interface ToastOptions {
+    durationMs?: number;
+    action?: ToastAction;
 }
 
 interface UiState {
@@ -27,7 +41,11 @@ interface UiState {
     collapse: (id: number) => void;
     setSearch: (term: string) => void;
     setClipboardFolder: (id: number | null) => void;
-    showToast: (message: string, tone?: ToastState["tone"]) => void;
+    showToast: (
+        message: string,
+        tone?: ToastState["tone"],
+        options?: ToastOptions,
+    ) => void;
     dismissToast: () => void;
     toggleSidebar: () => void;
     setUploadSidebarWidth: (width: number) => void;
@@ -80,8 +98,8 @@ export const useUiStore = create<UiState>()(
                 set({ uploadSidebarHeight }),
             setSelected: (selectedFolderId) => set({ selectedFolderId }),
             setClipboardFolder: (clipboardFolderId) => set({ clipboardFolderId }),
-            showToast: (message, tone = "success") =>
-                set({ toast: { id: Date.now(), message, tone } }),
+            showToast: (message, tone = "success", options) =>
+                set({ toast: { id: Date.now(), message, tone, ...options } }),
             dismissToast: () => set({ toast: null }),
             toggleExpanded: (id) =>
                 set((state) => ({

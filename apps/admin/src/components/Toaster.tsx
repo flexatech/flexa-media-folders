@@ -37,9 +37,18 @@ export function Toaster() {
         if (!owns || !toast) {
             return;
         }
-        const timer = window.setTimeout(dismiss, AUTO_DISMISS_MS);
+        const timer = window.setTimeout(
+            dismiss,
+            toast.durationMs ?? AUTO_DISMISS_MS,
+        );
         return () => window.clearTimeout(timer);
     }, [owns, toast, dismiss]);
+
+    const handleAction = () => {
+        const action = toast?.action;
+        dismiss();
+        action?.onAction();
+    };
 
     if (!owns || !toast) {
         return null;
@@ -66,6 +75,20 @@ export function Toaster() {
                     <Check aria-hidden className="fmf:h-4 fmf:w-4" />
                 )}
                 <span>{toast.message}</span>
+                {toast.action ? (
+                    <button
+                        type="button"
+                        onClick={handleAction}
+                        className={cn(
+                            "fmf:rounded-full fmf:px-2 fmf:py-0.5 fmf:text-sm fmf:font-semibold fmf:underline fmf:underline-offset-2 fmf:focus-visible:outline-none fmf:focus-visible:ring-2",
+                            toast.tone === "error"
+                                ? "fmf:text-red-800 fmf:hover:bg-red-100 fmf:focus-visible:ring-red-400"
+                                : "fmf:text-emerald-900 fmf:hover:bg-emerald-100 fmf:focus-visible:ring-emerald-400",
+                        )}
+                    >
+                        {toast.action.label}
+                    </button>
+                ) : null}
             </div>
         </div>,
         document.body,

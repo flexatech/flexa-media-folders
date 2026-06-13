@@ -15,6 +15,21 @@ final class AdminMenu {
 
 	public function register(): void {
 		add_action( 'admin_menu', [ $this, 'register_menu' ] );
+		add_filter( 'plugin_action_links_' . FLEXA_MF_BASENAME, [ $this, 'add_settings_link' ] );
+	}
+
+	/**
+	 * @param array<string,string> $links
+	 * @return array<string,string>
+	 */
+	public function add_settings_link( array $links ): array {
+		$settings = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( admin_url( 'upload.php?page=' . self::SLUG ) ),
+			esc_html__( 'Settings', 'flexa-media-folders' )
+		);
+
+		return array_merge( [ 'settings' => $settings ], $links );
 	}
 
 	public function register_menu(): void {

@@ -120,6 +120,49 @@ final class AttachmentFolderRepository {
 	}
 
 	/**
+	 * Current folder membership for a batch of attachments, grouped by
+	 * folder. Attachments with no relation row are grouped under key 0
+	 * (Uncategorized) so the caller can restore that state with a plain
+	 * set_folder( $ids, 0 ) call.
+	 *
+	 * @param int[] $attachment_ids
+	 * @return array<int, int[]> folder_id => attachment ids
+	 */
+	public function folders_map( array $attachment_ids ): array {
+		$attachment_ids = $this->filter_attachments( $attachment_ids );
+		if ( $attachment_ids === [] ) {
+			return [];
+		}
+		global $wpdb;
+		// $attachment_ids was int-cast + filtered above; $placeholders is the
+		// "%d,%d,…" list from safe construct #2 in the file header.
+		$placeholders = implode( ',', array_fill( 0, count( $attachment_ids ), '%d' ) );
+		$rows         = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT attachment_id, folder_id FROM {$this->table()} WHERE attachment_id IN ({$placeholders})",
+				$attachment_ids
+			),
+			ARRAY_A
+		);
+
+		$map     = [];
+		$related = [];
+		foreach ( (array) $rows as $row ) {
+			$attachment_id = (int) $row['attachment_id'];
+			$folder_id     = (int) $row['folder_id'];
+
+			$map[ $folder_id ][]       = $attachment_id;
+			$related[ $attachment_id ] = true;
+		}
+		foreach ( $attachment_ids as $attachment_id ) {
+			if ( ! isset( $related[ $attachment_id ] ) ) {
+				$map[0][] = $attachment_id;
+			}
+		}
+		return $map;
+	}
+
+	/**
 	 * Detach attachments from a folder without moving them anywhere.
 	 *
 	 * @param int[] $attachment_ids
