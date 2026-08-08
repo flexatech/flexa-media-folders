@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *
  *   1. A table name from $wpdb->prefix (table(), $wpdb->posts).
  *      Identifiers cannot be bound through $wpdb->prepare() before WP 6.2's
- *      %i placeholder, and this plugin supports WP 5.8+.
+ *      %i placeholder; this plugin requires WP 6.2+.
  *
  *   2. A dynamic IN(?,?,…) placeholder list built from
  *      implode( ',', array_fill( 0, count( $ids ), '%d' ) ). Every

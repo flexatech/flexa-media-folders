@@ -4,7 +4,7 @@ Tags: media library, folders, media, organize, attachments
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,9 @@ Yes. The plugin's Settings page has a per-post-type exclusion list.
 5. The Flexa Media Folders settings page.
 
 == Changelog ==
+
+= 1.2.5 =
+* Fix: the i18n build helper script is no longer included in the release package, so no unguarded PHP file ships to production.
 
 = 1.2.4 =
 * New: translation template (.pot) covering all plugin strings, so the plugin can now be translated into other languages.
