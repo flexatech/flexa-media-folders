@@ -40,6 +40,13 @@ The plugin ships with minified/compiled JavaScript and CSS in `assets/dist/`. Th
 
 https://github.com/flexatech/flexa-media-folders
 
+The assets are built with pnpm and Vite. To build them from source:
+
+1. `pnpm install`
+2. `pnpm build` (production build; the Vite config lives at `apps/admin/vite.config.ts`)
+
+Use `pnpm dev` for a watched development build.
+
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/flexa-media-folders`, or install it through the WordPress **Plugins** screen.
