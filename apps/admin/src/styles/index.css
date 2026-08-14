@@ -353,6 +353,14 @@ body[data-flexa-mf-vresizing="1"] .flexa-mf-upload-sidebar {
     min-width: 0;
 }
 
+/* WP 7.1's media modal wraps the attachment grid in an absolutely-positioned
+ * .attachments-wrapper, which lifts it out of the grid flow and overlaps the
+ * folder sidebar. Make it position: relative so it participates in the grid
+ * column set above. */
+#wp-media-modal .attachments-wrapper {
+    position: relative;
+}
+
 /* Standalone preview root (`#flexa-mf-admin-root`): give the tree-app a
  * definite height so the inner ScrollArea can resolve `flex-1 min-h-0`.
  * Without this, integrators who drop the root into a page with no surrounding

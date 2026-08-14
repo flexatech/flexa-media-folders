@@ -29,10 +29,9 @@
 /.editorconfig
 /.eslintrc*
 /.prettierrc*
-/README.md
-/CHANGELOG.md
-/CONTRIBUTING.md
-/CLAUDE.md
+# All root-level markdown is dev/notes only (README, CHANGELOG, CLAUDE, review
+# notes, etc.). The shipped WP readme is readme.txt, so this never excludes it.
+/*.md
 /src/Admin/dev-server.php
 **/*.map
 **/*.log

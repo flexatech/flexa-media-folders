@@ -2,9 +2,9 @@
 Contributors: flexatech
 Tags: media library, folders, media, organize, attachments
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,9 @@ Yes. The plugin's Settings page has a per-post-type exclusion list.
 5. The Flexa Media Folders settings page.
 
 == Changelog ==
+
+= 1.2.7 =
+* Compatibility: tested up to WordPress 7.1. Fixed the folder sidebar in the media modal (block editor "Select or Upload Media"), where WordPress 7.1 wraps the attachment grid in an absolutely-positioned container that overlapped the folder tree.
 
 = 1.2.6 =
 * Security: creating, renaming, moving, deleting, reordering and bulk-creating folders now require the `manage_categories` capability (Editors and Administrators) instead of `upload_files`. Folders are a shared, site-wide structure, so lower-privileged users could previously reorganize the tree for everyone. Reading folders and assigning your own media to them still only needs `upload_files`. The gate is filterable via `flexa_mf/capabilities/edit`.
