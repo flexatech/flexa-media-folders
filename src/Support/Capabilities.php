@@ -12,10 +12,23 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Capabilities {
 	public const MANAGE   = 'upload_files';
+	public const EDIT     = 'manage_categories';
 	public const SETTINGS = 'manage_options';
 
 	public static function can_manage_folders(): bool {
 		return current_user_can( apply_filters( 'flexa_mf/capabilities/manage', self::MANAGE ) );
+	}
+
+	/**
+	 * Gate for structural changes to the shared folder tree (create, rename,
+	 * move, delete, reorder, bulk create). Folders are a single site-wide
+	 * taxonomy visible to every user, so mutating the tree is a management
+	 * action - `upload_files` (which every author holds) is too low. Defaults
+	 * to `manage_categories`, the core capability for editing shared taxonomies,
+	 * held by Editors and Administrators. Add-ons can adjust via the filter.
+	 */
+	public static function can_edit_folders(): bool {
+		return current_user_can( apply_filters( 'flexa_mf/capabilities/edit', self::EDIT ) );
 	}
 
 	public static function can_manage_settings(): bool {

@@ -45,7 +45,7 @@ final class FolderController extends BaseRestController {
 				[
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => [ $this, 'create' ],
-					'permission_callback' => [ $this, 'manage_permission' ],
+					'permission_callback' => [ $this, 'edit_permission' ],
 					'args'                => [
 						'name'   => [
 							'type'              => 'string',
@@ -75,7 +75,7 @@ final class FolderController extends BaseRestController {
 				[
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => [ $this, 'update' ],
-					'permission_callback' => [ $this, 'manage_permission' ],
+					'permission_callback' => [ $this, 'edit_permission' ],
 					'args'                => [
 						'id'     => [
 							'type'              => 'integer',
@@ -104,7 +104,7 @@ final class FolderController extends BaseRestController {
 				[
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => [ $this, 'delete' ],
-					'permission_callback' => [ $this, 'manage_permission' ],
+					'permission_callback' => [ $this, 'edit_permission' ],
 					'args'                => [
 						'id'           => [
 							'type'              => 'integer',
@@ -131,7 +131,7 @@ final class FolderController extends BaseRestController {
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'bulk_create' ],
-				'permission_callback' => [ $this, 'manage_permission' ],
+				'permission_callback' => [ $this, 'edit_permission' ],
 				'args'                => [
 					'parent' => [
 						'type'              => 'integer',
@@ -152,7 +152,7 @@ final class FolderController extends BaseRestController {
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => [ $this, 'reorder' ],
-				'permission_callback' => [ $this, 'manage_permission' ],
+				'permission_callback' => [ $this, 'edit_permission' ],
 				'args'                => [
 					'parent' => [
 						'type'              => 'integer',

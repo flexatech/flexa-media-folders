@@ -31,6 +31,18 @@ abstract class BaseRestController {
 		return true;
 	}
 
+	public function edit_permission( WP_REST_Request $request ): bool|WP_Error {
+		unset( $request );
+		if ( ! Capabilities::can_edit_folders() ) {
+			return new WP_Error(
+				'flexa_mf_forbidden',
+				__( 'You do not have permission to modify folders.', 'flexa-media-folders' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+		return true;
+	}
+
 	public function settings_permission( WP_REST_Request $request ): bool|WP_Error {
 		unset( $request );
 		if ( ! Capabilities::can_manage_settings() ) {

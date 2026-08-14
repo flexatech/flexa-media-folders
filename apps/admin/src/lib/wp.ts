@@ -9,6 +9,7 @@ export interface FlexaMfGlobal {
     restUrl: string;
     restNonce: string;
     context: FlexaMfContext;
+    canEdit: boolean;
     version: string;
     pluginUrl: string;
     locale: string;

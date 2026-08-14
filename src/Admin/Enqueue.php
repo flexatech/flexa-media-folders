@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Flexa\MediaFolders\Admin;
 
 use Flexa\MediaFolders\Rest\SettingsController;
+use Flexa\MediaFolders\Support\Capabilities;
 use Flexa\MediaFolders\Support\SingletonTrait;
 
 defined( 'ABSPATH' ) || exit;
@@ -86,6 +87,7 @@ final class Enqueue {
 				'restUrl'     => esc_url_raw( rest_url( FLEXA_MF_REST_NAMESPACE . '/' ) ),
 				'restNonce'   => wp_create_nonce( 'wp_rest' ),
 				'context'     => $context,
+				'canEdit'     => Capabilities::can_edit_folders(),
 				'version'     => FLEXA_MF_VERSION,
 				'pluginUrl'   => esc_url_raw( FLEXA_MF_URL ),
 				'locale'      => determine_locale(),

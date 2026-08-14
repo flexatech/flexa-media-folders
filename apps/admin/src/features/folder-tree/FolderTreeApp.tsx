@@ -36,6 +36,11 @@ let defaultFolderApplied = false;
 export function FolderTreeApp({
     enableAttachmentDrops = false,
 }: FolderTreeAppProps = {}) {
+    // Structural folder edits are gated server-side by `manage_categories`
+    // (see Support\Capabilities). Mirror that here to hide controls users
+    // cannot use. Default permissive when the global is absent (dev/tests);
+    // the REST layer is the real gate.
+    const canEdit = window.flexaMF?.canEdit ?? true;
     const { data, isLoading, isError, error, refetch } = useFolderTree();
     const assign = useAssignAttachments();
     const createFolder = useCreateFolder();
@@ -90,9 +95,9 @@ export function FolderTreeApp({
         }
     }, [settings.data, data?.flat, setSelected, expand]);
 
-    const [pendingCreate, setPendingCreate] = useState<{ parent: number } | null>(
-        null,
-    );
+    const [pendingCreate, setPendingCreate] = useState<{
+        parent: number;
+    } | null>(null);
     const [bulkOpen, setBulkOpen] = useState(false);
 
     const startCreate = (parent: number) => {
@@ -212,7 +217,9 @@ export function FolderTreeApp({
             <SearchBox />
 
             {isLoading && (
-                <div className="fmf:py-6 fmf:text-sm fmf:text-slate-500">Loading folders…</div>
+                <div className="fmf:py-6 fmf:text-sm fmf:text-slate-500">
+                    Loading folders…
+                </div>
             )}
 
             {isError && (
@@ -256,11 +263,18 @@ export function FolderTreeApp({
                     <ScrollArea className="fmf:-mr-1 fmf:flex-1 fmf:min-h-0 fmf:pr-1">
                         <FolderTree
                             flat={data.flat}
-                            onRequestCreateChild={(parent) => startCreate(parent)}
+                            onRequestCreateChild={(parent) =>
+                                startCreate(parent)
+                            }
                             onRequestRename={(id, name) =>
                                 setRenameState({ open: true, id, name })
                             }
-                            onRequestDelete={(id, name, hasChildren, parentId) =>
+                            onRequestDelete={(
+                                id,
+                                name,
+                                hasChildren,
+                                parentId,
+                            ) =>
                                 setDeleteState({
                                     open: true,
                                     id,
@@ -277,72 +291,76 @@ export function FolderTreeApp({
                             onAttachmentDrop={
                                 enableAttachmentDrops
                                     ? (folderId, attachmentIds) =>
-                                          assign.mutate({ folderId, attachmentIds })
+                                          assign.mutate({
+                                              folderId,
+                                              attachmentIds,
+                                          })
                                     : undefined
                             }
                             pendingCreate={pendingCreate}
                             onSubmitCreate={submitCreate}
                             onCancelCreate={cancelCreate}
-                            onRequestCreateRoot={() => startCreate(0)}
-                            onRequestBulkCreate={() => setBulkOpen(true)}
+                            onRequestCreateRoot={
+                                canEdit ? () => startCreate(0) : undefined
+                            }
+                            onRequestBulkCreate={
+                                canEdit ? () => setBulkOpen(true) : undefined
+                            }
+                            canEdit={canEdit}
                         />
                     </ScrollArea>
                 </>
             )}
 
-            {data && data.flat.length > 0 && (
+            {canEdit && data && data.flat.length > 0 && (
                 <div className="fmf:flex fmf:shrink-0 fmf:items-center fmf:gap-2">
-                <button
-                    type="button"
-                    onClick={() =>
-                        startCreate(
-                            typeof selectedFolderId === "number"
-                                ? selectedFolderId
-                                : 0,
-                        )
-                    }
-                    className="fmf:flex fmf:min-w-0 fmf:flex-1 fmf:cursor-pointer fmf:items-center fmf:justify-center fmf:gap-2 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-2 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
-                >
-                    <Plus aria-hidden className="fmf:h-4 fmf:w-4" />
-                    {__("New Folder")}
-                </button>
-                <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button
-                                type="button"
-                                onClick={() => setBulkOpen(true)}
-                                aria-label={__("Create folders in bulk")}
-                                className="fmf:flex fmf:h-9 fmf:w-9 fmf:shrink-0 fmf:cursor-pointer fmf:items-center fmf:justify-center fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:text-slate-600 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
-                            >
-                                <FolderTreeIcon
-                                    aria-hidden
-                                    className="fmf:h-4 fmf:w-4"
-                                />
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">
-                            {__("Create folders in bulk")}
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            startCreate(
+                                typeof selectedFolderId === "number"
+                                    ? selectedFolderId
+                                    : 0,
+                            )
+                        }
+                        className="fmf:flex fmf:min-w-0 fmf:flex-1 fmf:cursor-pointer fmf:items-center fmf:justify-center fmf:gap-2 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-2 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
+                    >
+                        <Plus aria-hidden className="fmf:h-4 fmf:w-4" />
+                        {__("New Folder")}
+                    </button>
+                    <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    onClick={() => setBulkOpen(true)}
+                                    aria-label={__("Create folders in bulk")}
+                                    className="fmf:flex fmf:h-9 fmf:w-9 fmf:shrink-0 fmf:cursor-pointer fmf:items-center fmf:justify-center fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:text-slate-600 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
+                                >
+                                    <FolderTreeIcon
+                                        aria-hidden
+                                        className="fmf:h-4 fmf:w-4"
+                                    />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                                {__("Create folders in bulk")}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             )}
 
             <BulkCreateSheet open={bulkOpen} onOpenChange={setBulkOpen} />
             <RenameSheet
                 open={renameState.open}
-                onOpenChange={(open) =>
-                    setRenameState((s) => ({ ...s, open }))
-                }
+                onOpenChange={(open) => setRenameState((s) => ({ ...s, open }))}
                 id={renameState.id}
                 currentName={renameState.name}
             />
             <DeleteDialog
                 open={deleteState.open}
-                onOpenChange={(open) =>
-                    setDeleteState((s) => ({ ...s, open }))
-                }
+                onOpenChange={(open) => setDeleteState((s) => ({ ...s, open }))}
                 id={deleteState.id}
                 name={deleteState.name}
                 hasChildren={deleteState.hasChildren}

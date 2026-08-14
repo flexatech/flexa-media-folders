@@ -18,7 +18,7 @@ import {
     FolderTree as FolderTreeIcon,
     Plus,
 } from "lucide-react";
-import { Fragment, useMemo, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState, type ReactNode } from "react";
 import {
     ContextMenu,
     ContextMenuContent,
@@ -30,12 +30,7 @@ import { useUiStore } from "@/lib/store";
 import { useSettings } from "../settings/useSettings";
 import { FolderNode } from "./FolderNode";
 import { PendingFolderRow } from "./PendingFolderRow";
-import {
-    buildTree,
-    descendantIds,
-    filterFlat,
-    flattenTree,
-} from "./treeUtils";
+import { buildTree, descendantIds, filterFlat, flattenTree } from "./treeUtils";
 import type { FlattenedItem, FolderNodeData, SelectedFolderId } from "./types";
 import { useReorderFolders, useUpdateFolder } from "./useFolderMutations";
 
@@ -64,7 +59,9 @@ const treeAnimation: AutoAnimationPlugin = (el, action, a, b) => {
     let keyframes: Keyframe[];
     if (action === "remain" && a && b) {
         keyframes = [
-            { transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` },
+            {
+                transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)`,
+            },
             { transform: "translate(0, 0)" },
         ];
     } else if (action === "remove") {
@@ -87,7 +84,12 @@ interface FolderTreeProps {
     flat: FolderNodeData[];
     onRequestCreateChild: (parentId: number) => void;
     onRequestRename: (id: number, name: string) => void;
-    onRequestDelete: (id: number, name: string, hasChildren: boolean, parentId: number) => void;
+    onRequestDelete: (
+        id: number,
+        name: string,
+        hasChildren: boolean,
+        parentId: number,
+    ) => void;
     onRequestCut: (id: number) => void;
     onRequestPaste: (targetParentId: number) => void;
     onRequestChangeColor: (id: number, color: string | null) => void;
@@ -99,6 +101,9 @@ interface FolderTreeProps {
     onCancelCreate?: () => void;
     onRequestCreateRoot?: () => void;
     onRequestBulkCreate?: () => void;
+    /** When false, folder structural edits (create/rename/move/delete/reorder)
+     *  are hidden. Gated server-side by `manage_categories`. */
+    canEdit?: boolean;
 }
 
 export function FolderTree({
@@ -117,6 +122,7 @@ export function FolderTree({
     onCancelCreate,
     onRequestCreateRoot,
     onRequestBulkCreate,
+    canEdit = true,
 }: FolderTreeProps) {
     const expandedIds = useUiStore((s) => s.expandedIds);
     const toggleExpanded = useUiStore((s) => s.toggleExpanded);
@@ -158,7 +164,10 @@ export function FolderTree({
     }, [flat, expandedIds, search, folderSort]);
 
     const activeItem = useMemo(
-        () => (activeId !== null ? items.find((i) => i.id === activeId) ?? null : null),
+        () =>
+            activeId !== null
+                ? (items.find((i) => i.id === activeId) ?? null)
+                : null,
         [activeId, items],
     );
 
@@ -173,7 +182,10 @@ export function FolderTree({
         if (clipboardFolderId === null) {
             return new Set<number>();
         }
-        return new Set<number>([clipboardFolderId, ...descendantIds(items, clipboardFolderId)]);
+        return new Set<number>([
+            clipboardFolderId,
+            ...descendantIds(items, clipboardFolderId),
+        ]);
     }, [clipboardFolderId, items]);
 
     const pendingInsert = useMemo(() => {
@@ -183,7 +195,9 @@ export function FolderTree({
         if (pendingCreate.parent === 0) {
             return { index: items.length, depth: 0 };
         }
-        const parentIndex = items.findIndex((i) => i.id === pendingCreate.parent);
+        const parentIndex = items.findIndex(
+            (i) => i.id === pendingCreate.parent,
+        );
         if (parentIndex === -1) {
             return { index: items.length, depth: 0 };
         }
@@ -191,9 +205,12 @@ export function FolderTree({
         return { index: parentIndex + 1, depth: parentDepth + 1 };
     }, [pendingCreate, items]);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    );
+    const pointerSensor = useSensor(PointerSensor, {
+        activationConstraint: { distance: 5 },
+    });
+    // No sensors -> folder drag never activates. Attachment drag-to-folder is
+    // native HTML5 (handled in FolderNode) and stays enabled independently.
+    const sensors = useSensors(...(canEdit ? [pointerSensor] : []));
 
     // Cycle guard for drag-sort. Walks UP from `candidateParent` in the full
     // flat tree (not just visible items) - if we ever encounter `active`,
@@ -261,7 +278,10 @@ export function FolderTree({
         setOverId(null);
         setDropMode(null);
         overRectRef.current = null;
-        const ev = event.activatorEvent as PointerEvent | MouseEvent | undefined;
+        const ev = event.activatorEvent as
+            | PointerEvent
+            | MouseEvent
+            | undefined;
         const y =
             ev && typeof (ev as PointerEvent).clientY === "number"
                 ? (ev as PointerEvent).clientY
@@ -382,91 +402,101 @@ export function FolderTree({
             ? flat.find((f) => f.id === clipboardFolderId)
             : undefined;
     const canPasteAtRoot =
-        clipboardFolderId !== null && cutFolder !== undefined && cutFolder.parent !== 0;
+        clipboardFolderId !== null &&
+        cutFolder !== undefined &&
+        cutFolder.parent !== 0;
 
     const rootMenu = (
         <ContextMenuContent>
             <ContextMenuItem onSelect={() => onRequestCreateChild(0)}>
                 <span className="fmf:flex-1">{__("New Folder")}</span>
-                <FolderPlus aria-hidden className="fmf:h-4 fmf:w-4 fmf:text-slate-500" />
+                <FolderPlus
+                    aria-hidden
+                    className="fmf:h-4 fmf:w-4 fmf:text-slate-500"
+                />
             </ContextMenuItem>
             <ContextMenuItem
                 onSelect={() => onRequestPaste(0)}
                 disabled={!canPasteAtRoot}
             >
                 <span className="fmf:flex-1">{__("Paste")}</span>
-                <ClipboardPaste aria-hidden className="fmf:h-4 fmf:w-4 fmf:text-slate-500" />
+                <ClipboardPaste
+                    aria-hidden
+                    className="fmf:h-4 fmf:w-4 fmf:text-slate-500"
+                />
             </ContextMenuItem>
         </ContextMenuContent>
     );
 
+    // Wrap the tree container in the empty-space context menu, but only when
+    // the user may edit folders. Read-only users get the bare container.
+    const withRootMenu = (node: ReactNode) =>
+        canEdit ? (
+            <ContextMenu>
+                <ContextMenuTrigger asChild>{node}</ContextMenuTrigger>
+                {rootMenu}
+            </ContextMenu>
+        ) : (
+            node
+        );
+
     if (items.length === 0) {
         if (pendingInsert && onSubmitCreate && onCancelCreate) {
-            return (
-                <ContextMenu>
-                    <ContextMenuTrigger asChild>
-                        <div
-                            className="fmf:min-h-full fmf:space-y-0.5"
-                            role="tree"
-                            data-flexa-mf-droptree="true"
-                        >
-                            <PendingFolderRow
-                                depth={pendingInsert.depth}
-                                onSubmit={onSubmitCreate}
-                                onCancel={onCancelCreate}
-                            />
-                        </div>
-                    </ContextMenuTrigger>
-                    {rootMenu}
-                </ContextMenu>
+            return withRootMenu(
+                <div
+                    className="fmf:min-h-full fmf:space-y-0.5"
+                    role="tree"
+                    data-flexa-mf-droptree="true"
+                >
+                    <PendingFolderRow
+                        depth={pendingInsert.depth}
+                        onSubmit={onSubmitCreate}
+                        onCancel={onCancelCreate}
+                    />
+                </div>,
             );
         }
         const isSearching = search.trim() !== "";
-        return (
-            <ContextMenu>
-                <ContextMenuTrigger asChild>
-                    <div className="fmf:flex fmf:min-h-[160px] fmf:flex-col fmf:items-center fmf:justify-center fmf:gap-3 fmf:rounded-md fmf:border fmf:border-dashed fmf:border-slate-200 fmf:p-6 fmf:text-center fmf:text-sm fmf:text-slate-500">
-                        <Folder className="fmf:h-5 fmf:w-5 fmf:text-slate-400" />
-                        <span>
-                            {isSearching
-                                ? __("No folders match your search.")
-                                : __("No folders yet. Create one to get started.")}
-                        </span>
-                        {!isSearching &&
-                            (onRequestCreateRoot || onRequestBulkCreate) && (
-                                <div className="fmf:mt-1 fmf:flex fmf:flex-wrap fmf:items-center fmf:justify-center fmf:gap-2">
-                                    {onRequestCreateRoot && (
-                                        <button
-                                            type="button"
-                                            onClick={onRequestCreateRoot}
-                                            className="fmf:flex fmf:cursor-pointer fmf:items-center fmf:gap-1.5 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-1.5 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
-                                        >
-                                            <Plus
-                                                aria-hidden
-                                                className="fmf:h-4 fmf:w-4"
-                                            />
-                                            {__("New Folder")}
-                                        </button>
-                                    )}
-                                    {onRequestBulkCreate && (
-                                        <button
-                                            type="button"
-                                            onClick={onRequestBulkCreate}
-                                            className="fmf:flex fmf:cursor-pointer fmf:items-center fmf:gap-1.5 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-1.5 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
-                                        >
-                                            <FolderTreeIcon
-                                                aria-hidden
-                                                className="fmf:h-4 fmf:w-4"
-                                            />
-                                            {__("Create in bulk")}
-                                        </button>
-                                    )}
-                                </div>
+        return withRootMenu(
+            <div className="fmf:flex fmf:min-h-[160px] fmf:flex-col fmf:items-center fmf:justify-center fmf:gap-3 fmf:rounded-md fmf:border fmf:border-dashed fmf:border-slate-200 fmf:p-6 fmf:text-center fmf:text-sm fmf:text-slate-500">
+                <Folder className="fmf:h-5 fmf:w-5 fmf:text-slate-400" />
+                <span>
+                    {isSearching
+                        ? __("No folders match your search.")
+                        : __("No folders yet. Create one to get started.")}
+                </span>
+                {!isSearching &&
+                    (onRequestCreateRoot || onRequestBulkCreate) && (
+                        <div className="fmf:mt-1 fmf:flex fmf:flex-wrap fmf:items-center fmf:justify-center fmf:gap-2">
+                            {onRequestCreateRoot && (
+                                <button
+                                    type="button"
+                                    onClick={onRequestCreateRoot}
+                                    className="fmf:flex fmf:cursor-pointer fmf:items-center fmf:gap-1.5 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-1.5 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
+                                >
+                                    <Plus
+                                        aria-hidden
+                                        className="fmf:h-4 fmf:w-4"
+                                    />
+                                    {__("New Folder")}
+                                </button>
                             )}
-                    </div>
-                </ContextMenuTrigger>
-                {rootMenu}
-            </ContextMenu>
+                            {onRequestBulkCreate && (
+                                <button
+                                    type="button"
+                                    onClick={onRequestBulkCreate}
+                                    className="fmf:flex fmf:cursor-pointer fmf:items-center fmf:gap-1.5 fmf:rounded-full fmf:border fmf:border-slate-200 fmf:bg-white fmf:px-3 fmf:py-1.5 fmf:text-sm fmf:font-medium fmf:text-slate-700 fmf:transition-colors fmf:hover:bg-slate-50 fmf:hover:text-slate-900 fmf:focus-visible:outline-none fmf:focus-visible:ring-2 fmf:focus-visible:ring-brand-500"
+                                >
+                                    <FolderTreeIcon
+                                        aria-hidden
+                                        className="fmf:h-4 fmf:w-4"
+                                    />
+                                    {__("Create in bulk")}
+                                </button>
+                            )}
+                        </div>
+                    )}
+            </div>,
         );
     }
 
@@ -483,96 +513,101 @@ export function FolderTree({
                 setOverId(null);
             }}
         >
-            <ContextMenu>
-                <ContextMenuTrigger asChild>
-                    <div
-                        ref={treeParent}
-                        className="fmf:min-h-full fmf:space-y-0.5 fmf:pb-6"
-                        role="tree"
-                        data-flexa-mf-droptree="true"
-                    >
-                        {items.map((item, idx) => {
-                    const isActive = activeId === item.id;
-                    const isOver =
-                        activeId !== null &&
-                        !isActive &&
-                        overId === item.id;
-                    const insertHint =
-                        isOver && (dropMode === "before" || dropMode === "after")
-                            ? dropMode
-                            : null;
-                    const isDropTarget = isOver && dropMode === "inside";
-                    const renderPendingBefore =
-                        pendingInsert?.index === idx &&
-                        onSubmitCreate &&
-                        onCancelCreate;
-                    return (
-                        <Fragment key={item.id}>
-                            {renderPendingBefore && (
-                                <PendingFolderRow
-                                    depth={pendingInsert.depth}
-                                    onSubmit={onSubmitCreate}
-                                    onCancel={onCancelCreate}
+            {withRootMenu(
+                <div
+                    ref={treeParent}
+                    className="fmf:min-h-full fmf:space-y-0.5 fmf:pb-6"
+                    role="tree"
+                    data-flexa-mf-droptree="true"
+                >
+                    {items.map((item, idx) => {
+                        const isActive = activeId === item.id;
+                        const isOver =
+                            activeId !== null &&
+                            !isActive &&
+                            overId === item.id;
+                        const insertHint =
+                            isOver &&
+                            (dropMode === "before" || dropMode === "after")
+                                ? dropMode
+                                : null;
+                        const isDropTarget = isOver && dropMode === "inside";
+                        const renderPendingBefore =
+                            pendingInsert?.index === idx &&
+                            onSubmitCreate &&
+                            onCancelCreate;
+                        return (
+                            <Fragment key={item.id}>
+                                {renderPendingBefore && (
+                                    <PendingFolderRow
+                                        depth={pendingInsert.depth}
+                                        onSubmit={onSubmitCreate}
+                                        onCancel={onCancelCreate}
+                                    />
+                                )}
+                                <FolderNode
+                                    item={item}
+                                    selected={selected === item.id}
+                                    isDropTarget={isDropTarget}
+                                    insertHint={insertHint}
+                                    ghostItem={
+                                        insertHint && activeItem
+                                            ? activeItem
+                                            : null
+                                    }
+                                    disableDrop={disabledDropIds.has(item.id)}
+                                    cutMarked={clipboardFolderId === item.id}
+                                    canEdit={canEdit}
+                                    canPaste={
+                                        clipboardFolderId !== null &&
+                                        !nonPasteableIds.has(item.id) &&
+                                        item.parent !== item.id
+                                    }
+                                    onSelect={() => setSelected(item.id)}
+                                    onToggle={() => toggleExpanded(item.id)}
+                                    onCreateChild={() =>
+                                        onRequestCreateChild(item.id)
+                                    }
+                                    onRename={() =>
+                                        onRequestRename(item.id, item.name)
+                                    }
+                                    onDelete={() =>
+                                        onRequestDelete(
+                                            item.id,
+                                            item.name,
+                                            item.hasChildren,
+                                            item.parentId,
+                                        )
+                                    }
+                                    onCut={() => onRequestCut(item.id)}
+                                    onPaste={() => onRequestPaste(item.id)}
+                                    onChangeColor={(color) =>
+                                        onRequestChangeColor(item.id, color)
+                                    }
+                                    onDownload={() =>
+                                        onRequestDownload(item.id, item.name)
+                                    }
+                                    onAttachmentDrop={onAttachmentDrop}
                                 />
-                            )}
-                            <FolderNode
-                                item={item}
-                                selected={selected === item.id}
-                                isDropTarget={isDropTarget}
-                                insertHint={insertHint}
-                                ghostItem={
-                                    insertHint && activeItem ? activeItem : null
-                                }
-                                disableDrop={disabledDropIds.has(item.id)}
-                                cutMarked={clipboardFolderId === item.id}
-                                canPaste={
-                                    clipboardFolderId !== null &&
-                                    !nonPasteableIds.has(item.id) &&
-                                    item.parent !== item.id
-                                }
-                                onSelect={() => setSelected(item.id)}
-                                onToggle={() => toggleExpanded(item.id)}
-                                onCreateChild={() =>
-                                    onRequestCreateChild(item.id)
-                                }
-                                onRename={() => onRequestRename(item.id, item.name)}
-                                onDelete={() =>
-                                    onRequestDelete(
-                                        item.id,
-                                        item.name,
-                                        item.hasChildren,
-                                        item.parentId,
-                                    )
-                                }
-                                onCut={() => onRequestCut(item.id)}
-                                onPaste={() => onRequestPaste(item.id)}
-                                onChangeColor={(color) =>
-                                    onRequestChangeColor(item.id, color)
-                                }
-                                onDownload={() =>
-                                    onRequestDownload(item.id, item.name)
-                                }
-                                onAttachmentDrop={onAttachmentDrop}
+                            </Fragment>
+                        );
+                    })}
+                    {pendingInsert?.index === items.length &&
+                        onSubmitCreate &&
+                        onCancelCreate && (
+                            <PendingFolderRow
+                                depth={pendingInsert.depth}
+                                onSubmit={onSubmitCreate}
+                                onCancel={onCancelCreate}
                             />
-                        </Fragment>
-                    );
-                })}
-                {pendingInsert?.index === items.length &&
-                    onSubmitCreate &&
-                    onCancelCreate && (
-                        <PendingFolderRow
-                            depth={pendingInsert.depth}
-                            onSubmit={onSubmitCreate}
-                            onCancel={onCancelCreate}
-                        />
-                    )}
-                    </div>
-                </ContextMenuTrigger>
-                {rootMenu}
-            </ContextMenu>
+                        )}
+                </div>,
+            )}
             <DragOverlay>
                 {activeId !== null && (
-                    <DragOverlayPreview item={items.find((i) => i.id === activeId) ?? null} />
+                    <DragOverlayPreview
+                        item={items.find((i) => i.id === activeId) ?? null}
+                    />
                 )}
             </DragOverlay>
         </DndContext>
